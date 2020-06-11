@@ -141,7 +141,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 			id,
 			key,
 			config,
-			client,
 		).map_err(|e| e.into())
 	})?;
 

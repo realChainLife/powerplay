@@ -6,7 +6,7 @@ edition = "2018"
 
 [dependencies]
 powerplay = { package = "powerplay", path = ".." }
-parachain = { package = "powerplay-parachain", path = "../parachain" }
+parachain = { package = "polkadot-parachain", git = "https://github.com/paritytech/polkadot", branch = "master" }
 collator = { package = "polkadot-collator", git = "https://github.com/paritytech/polkadot", branch = "master" }
 primitives = { package = "polkadot-primitives", git = "https://github.com/paritytech/polkadot", branch = "master" }
 sp-core = { git = "https://github.com/paritytech/substrate", branch = "master" }
