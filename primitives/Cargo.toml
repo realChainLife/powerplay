@@ -1,5 +1,5 @@
 [package]
-name = "polkadot-primitives"
+name = "powerplay-primitives"
 version = "0.8.5"
 authors = ["Parity Technologies <admin@parity.io>"]
 edition = "2018"
