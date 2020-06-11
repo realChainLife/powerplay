@@ -140,8 +140,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 			context,
 			id,
 			key,
-			runner,
 			config,
+			cli,
 		).map_err(|e| e.into())
 	})?;
 
