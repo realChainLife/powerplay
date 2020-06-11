@@ -84,7 +84,7 @@ impl ParachainContext for PowerplayContext {
 			add: powerplay_head.number % 100,
 		};
 
-		let next_head = powerplay::execute(Powerplay_head.hash(), Powerplay_head, &next_body)
+		let next_head = powerplay::execute(powerplay_head.hash(), powerplay_head, &next_body)
 			.expect("good execution params; qed");
 
 		let encoded_head = HeadData(next_head.encode());
