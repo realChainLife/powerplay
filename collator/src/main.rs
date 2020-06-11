@@ -19,7 +19,7 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use adder::{HeadData as AdderHead, BlockData as AdderBody};
+use powerplay::{HeadData as PowerplayHead, BlockData as PowerplayBody};
 use sp_core::Pair;
 use codec::{Encode, Decode};
 use primitives::{
@@ -32,7 +32,7 @@ use collator::{
 use parking_lot::Mutex;
 use futures::future::{Ready, ok, err, TryFutureExt};
 
-const GENESIS: AdderHead = AdderHead {
+const GENESIS: PowerplayHead = PowerplayHead {
 	number: 0,
 	parent_hash: [0; 32],
 	post_state: [
@@ -41,20 +41,20 @@ const GENESIS: AdderHead = AdderHead {
 	],
 };
 
-const GENESIS_BODY: AdderBody = AdderBody {
+const GENESIS_BODY: PowerplayBody = PowerplayBody {
 	state: 0,
 	add: 0,
 };
 
 #[derive(Clone)]
-struct AdderContext {
-	db: Arc<Mutex<HashMap<AdderHead, AdderBody>>>,
+struct PowerplayContext {
+	db: Arc<Mutex<HashMap<PowerplayHead, PowerplayBody>>>,
 	/// We store it here to make sure that our interfaces require the correct bounds.
 	_network: Option<Arc<dyn Network>>,
 }
 
 /// The parachain context.
-impl ParachainContext for AdderContext {
+impl ParachainContext for PowerplayContext {
 	type ProduceCandidate = Ready<Result<(BlockData, HeadData), InvalidHead>>;
 
 	fn produce_candidate(
@@ -64,27 +64,27 @@ impl ParachainContext for AdderContext {
 		local_validation: LocalValidationData,
 	) -> Self::ProduceCandidate
 	{
-		let adder_head = match AdderHead::decode(&mut &local_validation.parent_head.0[..]) {
-			Ok(adder_head) => adder_head,
+		let powerplay_head = match PowerplayHead::decode(&mut &local_validation.parent_head.0[..]) {
+			Ok(powerplay_head) => powerplay_head,
 			Err(_) => return err(InvalidHead)
 		};
 
 		let mut db = self.db.lock();
 
-		let last_body = if adder_head == GENESIS {
+		let last_body = if powerplay_head == GENESIS {
 			GENESIS_BODY
 		} else {
-			db.get(&adder_head)
+			db.get(&powerplay_head)
 				.expect("All past bodies stored since this is the only collator")
 				.clone()
 		};
 
-		let next_body = AdderBody {
+		let next_body = PowerplayBody {
 			state: last_body.state.overflowing_add(last_body.add).0,
-			add: adder_head.number % 100,
+			add: powerplay_head.number % 100,
 		};
 
-		let next_head = adder::execute(adder_head.hash(), adder_head, &next_body)
+		let next_head = powerplay::execute(Powerplay_head.hash(), Powerplay_head, &next_body)
 			.expect("good execution params; qed");
 
 		let encoded_head = HeadData(next_head.encode());
@@ -98,7 +98,7 @@ impl ParachainContext for AdderContext {
 	}
 }
 
-impl BuildParachainContext for AdderContext {
+impl BuildParachainContext for PowerplayContext {
 	type ParachainContext = Self;
 
 	fn build<Client, SP, Extrinsic>(
@@ -115,7 +115,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 	let key = Arc::new(Pair::from_seed(&[1; 32]));
 	let id: ParaId = 100.into();
 
-	println!("Starting adder collator with genesis: ");
+	println!("Starting powerplay collator with genesis: ");
 
 	{
 		let encoded = GENESIS.encode();
@@ -128,7 +128,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 		println!();
 	}
 
-	let context = AdderContext {
+	let context = PowerplayContext {
 		db: Arc::new(Mutex::new(HashMap::new())),
 		_network: None,
 	};
