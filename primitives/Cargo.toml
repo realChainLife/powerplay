@@ -38,6 +38,6 @@ std = [
 	"sp-staking/std",
 	"runtime_primitives/std",
 	"serde",
-	"polkadot-parachain/std",
+	"powerplay-parachain/std",
 	"bitvec/std",
 ]
