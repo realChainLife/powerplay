@@ -28,7 +28,7 @@ pub mod parachain;
 pub use parity_scale_codec::Compact;
 
 /// An index to a block.
-pub type BlockNumber = polkadot_parachain::primitives::RelayChainBlockNumber;
+pub type BlockNumber = powerplay_parachain::primitives::RelayChainBlockNumber;
 
 /// An instant or duration in time.
 pub type Moment = u64;

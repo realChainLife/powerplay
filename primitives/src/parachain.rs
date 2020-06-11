@@ -33,7 +33,7 @@ use runtime_primitives::traits::Block as BlockT;
 use inherents::InherentIdentifier;
 use application_crypto::KeyTypeId;
 
-pub use polkadot_parachain::primitives::{
+pub use powerplay_parachain::primitives::{
 	Id, ParachainDispatchOrigin, LOWEST_USER_ID, UpwardMessage, HeadData, BlockData,
 	ValidationCode,
 };
