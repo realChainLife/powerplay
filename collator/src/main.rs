@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Polkadot.  If not, see <http://www.gnu.org/licenses/>.
 
-//! Collator for polkadot
+//! Collator for powerplay
 
 use std::collections::HashMap;
 use std::sync::Arc;

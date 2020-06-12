@@ -52,7 +52,7 @@ impl HeadData {
 
 /// Block data for this parachain.
 #[derive(Default, Clone, Encode, Decode)]
-pub struct BlockData {
+pub struct CrossChain {
 	/// State to begin from.
 	pub state: u64,
 	/// Amount to add (overflowing)
