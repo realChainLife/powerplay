@@ -36,11 +36,8 @@ include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 /// Head data for this parachain.
 #[derive(Default, Clone, Hash, Eq, PartialEq, Encode, Decode)]
 pub struct HeadData {
-	/// Block number
 	pub number: u64,
-	/// parent block keccak256
 	pub parent_hash: [u8; 32],
-	/// hash of post-execution state.
 	pub post_state: [u8; 32],
 }
 
@@ -52,28 +49,39 @@ impl HeadData {
 
 /// Block data for this parachain.
 #[derive(Default, Clone, Encode, Decode)]
-pub struct BlockData {}
-
-pub trait ExtBlockData {
-	fn merge_sort(&self, arr: Vec<u8>) -> PromiseOrValue<Vec<u8>>;
-	fn merge(
-		&self,
-		#[callback]
-		#encode
-		data0: Vec<u8>,
-		#[callback]
-		#encode
-		data1: Vec<u8>,
-	) -> Vec<u8>;
+pub struct BlockData {
+	pub state: [u8; 32],
+	pub data: CrossChain,
 }
 
-pub trait ExtStatusMessage {
-    fn set_status(&mut self, message: String);
-    fn get_status(&self, account_id: String) -> Option<String>;
+/// This is our custom type, to be stored on-chain:
+#[derive(Default, Clone, Encode, Decode)]
+pub struct CrossChain {}
+
+// Something that can run a cross-chain function:
+pub trait BuildCrossChain {
+	/// The crosschain context produced by the `build` function.
+	type CrossChain: self::CrossChain;
+	
+	/// Build the `CrossChain`
+    fn build_sort(&self, arr: Vec<u8>) -> PromiseOrValue<Vec<u8>>;
+    fn build(
+        &self,
+        #[callback]
+        #[serializer(borsh)]
+        data0: Vec<u8>,
+        #[callback]
+        #[serializer(borsh)]
+        data1: Vec<u8>,
+    ) -> CrossChain Vec<u8>;
 }
 
-#[near_bindgen]
-impl BlockData {
+pub trait ChainStatus {
+	fn set_status(&mut self, message: String);
+	fn get_status(&self, id: String) -> Option<String>;
+}
+
+impl CrossChain {
     pub fn deploy_status_message(&self, account_id: String, amount: u64) {
         Promise::new(account_id)
             .create_account()
@@ -172,30 +180,4 @@ impl BlockData {
     pub fn transfer_money(&mut self, account_id: String, amount: u64) {
         Promise::new(account_id).transfer(amount as u128);
     }
-}
-
-/// Start state mismatched with parent header's state hash.
-#[derive(Debug)]
-pub struct StateMismatch;
-
-/// Execute a block body on top of given parent head, producing new parent head
-/// if valid.
-pub fn execute(
-	parent_hash: [u8; 32],
-	parent_head: HeadData,
-	block_data: &BlockData,
-) -> Result<HeadData, StateMismatch> {
-	debug_assert_eq!(parent_hash, parent_head.hash());
-
-	if hash_state(block_data.state) != parent_head.post_state {
-		return Err(StateMismatch);
-	}
-
-	let new_state = block_data.state.overflowing_add(block_data.add).0;
-
-	Ok(HeadData {
-		number: parent_head.number + 1,
-		parent_hash,
-		post_state: hash_state(new_state),
-	})
 }

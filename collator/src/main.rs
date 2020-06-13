@@ -19,7 +19,7 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use powerplay::{HeadData as PowerplayHead, BlockData as PowerplayBody};
+use powerplay::{HeadData as PowerplayHead, BlockData as PowerplayBody}, CrossChain;
 use sp_core::Pair;
 use codec::{Encode, Decode};
 use primitives::{
