@@ -20,6 +20,10 @@ To run and deploy your own instance of the Powerplay, ensure you have Rust insta
     rustup install nightly
     rustup target add wasm32-unknown-unknown --toolchain nightly
 
+### Install Support Software
+
+    sudo apt install make clang pkg-config libssl-dev
+
 ### Build From Source 
 
     git clone https://github.com/realChainLife/powerplay
@@ -27,7 +31,7 @@ To run and deploy your own instance of the Powerplay, ensure you have Rust insta
     cargo build
     cd collator
 
-After you make changes in `collator/src/main.rs`, recompile the contract with:
+After you make changes in `src/lib.rs` & `collator/src/main.rs`, recompile the contract with:
     
     cargo build
     cargo run
