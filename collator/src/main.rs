@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Polkadot.  If not, see <http://www.gnu.org/licenses/>.
 
-//! Collator for polkadot
+//! Collator for powerplay
 
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use powerplay::{HeadData as PowerplayHead, BlockData as PowerplayBody};
+use powerplay::{HeadData as PowerplayHead, BlockData as PowerplayBody}, CrossChain;
 use sp_core::Pair;
 use codec::{Encode, Decode};
 use primitives::{
@@ -35,15 +35,12 @@ use futures::future::{Ready, ok, err, TryFutureExt};
 const GENESIS: PowerplayHead = PowerplayHead {
 	number: 0,
 	parent_hash: [0; 32],
-	post_state: [
-		1, 27, 77, 3, 221, 140, 1, 241, 4, 145, 67, 207, 156, 76, 129, 126, 75,
-		22, 127, 29, 27, 131, 229, 198, 240, 241, 13, 137, 186, 30, 123, 206
-	],
 };
 
-const GENESIS_BODY: PowerplayBody = PowerplayBody {
+const GENESIS_BODY: PowerplayBody = PowerplayBody, CrossChain {
 	state: 0,
 	add: 0,
+	data: crosschain,
 };
 
 #[derive(Clone)]
@@ -79,9 +76,10 @@ impl ParachainContext for PowerplayContext {
 				.clone()
 		};
 
-		let next_body = PowerplayBody {
+		let next_body = PowerplayBody, CrossChain {
 			state: last_body.state.overflowing_add(last_body.add).0,
 			add: powerplay_head.number % 100,
+			data: transfer_money(&mut self, account_id: String, amount: u64)
 		};
 
 		let next_head = powerplay::execute(powerplay_head.hash(), powerplay_head, &next_body)
@@ -89,6 +87,7 @@ impl ParachainContext for PowerplayContext {
 
 		let encoded_head = HeadData(next_head.encode());
 		let encoded_body = BlockData(next_body.encode());
+		let encoded_body = CrossChain(next.body.encode());
 
 		println!("Created collation for #{}, post-state={}",
 			next_head.number, next_body.state.overflowing_add(next_body.add).0);
